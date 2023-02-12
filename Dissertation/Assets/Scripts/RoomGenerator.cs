@@ -5,46 +5,29 @@ using UnityEngine;
 public class RoomGenerator : MonoBehaviour
 {
     public GameObject roomPrefab;
-    private int[,] roomsArray;
-    private int roomGap = 10;
-    private int numOfRooms = 5;
 
     // Start is called before the first frame update
     void Start()
     {
-        roomsArray = new int[numOfRooms, numOfRooms];
-        for (int i = 0; i < numOfRooms; i++)
-        {
-            for (int j = 0; j < numOfRooms; j++)
-            {
-                // 0 means the room is not created, 1 means the room is created
-                roomsArray[i, j] = Random.Range(0, 2);
-            }
-        }
-        GenerateRoom();
+        GenerateRoom(Random.Range(5.0f, 10.0f));
     }
 
-    /*
-     * GenerateRoom Function
-     * Description: Generates rooms in a 2D array.
-     * Parameters: None.
-     * Returns: void.
-    */
-    void GenerateRoom()
+    void GenerateRoom(float numOfRooms)
     {
         for (int i = 0; i < numOfRooms; i++)
         {
-            for (int j = 0; j < numOfRooms; j++)
-            {
-                if (roomsArray[i, j] == 0)
-                {
-                    float x = i * roomGap;
-                    float z = j * roomGap;
-                    GameObject room = Instantiate(roomPrefab);
-                    room.transform.position = new Vector3(x, 0, z);
-                    roomsArray[i, j] = 1;
-                }
-            }
+            float width = Random.Range(1.0f, 5.0f);
+            float height = Random.Range(1.0f, 5.0f);
+            float length = Random.Range(1.0f, 5.0f);
+
+            GameObject room = Instantiate(roomPrefab);
+            room.transform.localScale = new Vector3(width, height, length);
+
+            // Move the instantiated room to a random position
+            float x = Random.Range(-50.0f, 50.0f);
+            float z = Random.Range(-50.0f, 50.0f);
+
+            room.transform.position = new Vector3(x, 0, z);
         }
     }
 }
