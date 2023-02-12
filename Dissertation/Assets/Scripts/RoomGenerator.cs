@@ -5,59 +5,46 @@ using UnityEngine;
 public class RoomGenerator : MonoBehaviour
 {
     public GameObject roomPrefab;
+    private int[,] roomsArray;
+    private int roomGap = 10;
+    private int numOfRooms = 5;
 
     // Start is called before the first frame update
     void Start()
     {
-        GenerateRoom(Random.Range(5.0f, 10.0f));
+        roomsArray = new int[numOfRooms, numOfRooms];
+        for (int i = 0; i < numOfRooms; i++)
+        {
+            for (int j = 0; j < numOfRooms; j++)
+            {
+                // 0 means the room is not created, 1 means the room is created
+                roomsArray[i, j] = Random.Range(0, 2);
+            }
+        }
+        GenerateRoom();
     }
 
     /*
      * GenerateRoom Function
-     * Description: Generates different sizes of rooms in random places
-     * Parameters:
-     * - float numOfRooms: The number of rooms to be generated.
+     * Description: Generates rooms in a 2D array.
+     * Parameters: None.
      * Returns: void.
     */
-    void GenerateRoom(float numOfRooms)
+    void GenerateRoom()
     {
         for (int i = 0; i < numOfRooms; i++)
         {
-            float width = Random.Range(1.0f, 5.0f);
-            float height = Random.Range(1.0f, 5.0f);
-            float length = Random.Range(1.0f, 5.0f);
-
-            GameObject room = Instantiate(roomPrefab);
-            room.transform.localScale = new Vector3(width, height, length);
-
-            // Move the instantiated room to a random position
-            float x = Random.Range(-50.0f, 50.0f);
-            float z = Random.Range(-50.0f, 50.0f);
-
-            placeRoom(x, z, room);
-        }
-    }
-
-    void placeRoom(float x, float z, GameObject room)
-    {
-        bool roomOverlapping = false;
-        Collider[] colliders = Physics.OverlapBox(new Vector3(x, 0, z), room.transform.localScale / 2, Quaternion.identity);
-        foreach (Collider collider in colliders)
-        {
-            if (collider.gameObject != room)
+            for (int j = 0; j < numOfRooms; j++)
             {
-                roomOverlapping = true;
-                break;
+                if (roomsArray[i, j] == 0)
+                {
+                    float x = i * roomGap;
+                    float z = j * roomGap;
+                    GameObject room = Instantiate(roomPrefab);
+                    room.transform.position = new Vector3(x, 0, z);
+                    roomsArray[i, j] = 1;
+                }
             }
-        }
-
-        if (!roomOverlapping)
-        {
-            room.transform.position = new Vector3(x, 0, z);
-        }
-        else
-        {
-            Destroy(room);
         }
     }
 }
