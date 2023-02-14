@@ -9,7 +9,7 @@ public class RoomGenerator : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        GenerateRoom(Random.Range(5.0f, 10.0f));
+        GenerateRoom(Random.Range(10.0f, 15.0f));
     }
 
     void GenerateRoom(float numOfRooms)
@@ -24,8 +24,8 @@ public class RoomGenerator : MonoBehaviour
             room.transform.localScale = new Vector3(width, height, length);
 
             // Move the instantiated room to a random position
-            float x = Random.Range(-50.0f, 50.0f);
-            float z = Random.Range(-50.0f, 50.0f);
+            float x = Random.Range(-100.0f, 100.0f);
+            float z = Random.Range(-100.0f, 100.0f);
 
             room.transform.position = new Vector3(x, 0, z);
         }

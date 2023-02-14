@@ -48,4 +48,15 @@ public class RoomGenerator2 : MonoBehaviour
             }
         }
     }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.layer == LayerMask.NameToLayer("Room"))
+        {
+            Debug.Log("Rooms are overlapping");
+            // destroy or reposition the room
+            Destroy(other.gameObject);
+            Debug.Log("Room Destroyed");
+        }
+    }
 }
