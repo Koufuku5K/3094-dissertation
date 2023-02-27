@@ -22,13 +22,12 @@ public class CheckRoomOverlap : MonoBehaviour
                     {
                         if (room.GetComponent<Collider>().bounds.Intersects(other.bounds))
                         {
-                            // destroy or reposition the room
+                            // Destroy the room
                             Debug.Log("Rooms are overlapping");
+                            RoomGenerator roomGenerator = FindObjectOfType<RoomGenerator>();
+                            roomGenerator.RemoveRoom(room);
                             Destroy(room);
-                            /*Vector3 newPos = room.transform.position;
-                            newPos.x += 10;
-                            newPos.z += 10;
-                            room.transform.position = newPos;*/
+                            Debug.Log("Remaining Rooms: " + roomGenerator.rooms.Count);
                             break;
                         }
                     }
