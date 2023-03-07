@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CheckRoomOverlap : MonoBehaviour
 {
-    private List<GameObject> existingRooms = new List<GameObject>();
+    /*private List<GameObject> existingRooms = new List<GameObject>();
 
     private void OnTriggerEnter(Collider other)
     {
@@ -34,5 +34,5 @@ public class CheckRoomOverlap : MonoBehaviour
                 }
             }
         }
-    }
+    }*/
 }
