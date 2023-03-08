@@ -7,6 +7,8 @@ public class RoomGenerator : MonoBehaviour
     public GameObject roomPrefab;
     public GameObject corridorPrefab;
     public List<GameObject> rooms = new List<GameObject>();
+    private IEnumerator coroutine;
+
     //private List<GameObject> visited = new List<GameObject>();
     //private List<GameObject> unvisited = new List<GameObject>();
 
@@ -30,7 +32,7 @@ public class RoomGenerator : MonoBehaviour
 
         for (int i = 0; i < numOfRooms; i++)
         {
-            Debug.Log(i);
+            //Debug.Log(i);
             float width = Random.Range(2.0f, 5.0f);
             float height = Random.Range(2.0f, 5.0f);
             float length = Random.Range(2.0f, 5.0f);
@@ -40,12 +42,17 @@ public class RoomGenerator : MonoBehaviour
             float z = Random.Range(-100.0f, 100.0f);
 
             GameObject room = Instantiate(roomPrefab);
+            Debug.Log("Room position X: " + room.transform.position.x);
+            Debug.Log("Room position Z: " + room.transform.position.z);
             room.transform.localScale = new Vector3(width, height, length);
 
             room.transform.position = new Vector3(x, 0, z);
 
+            Debug.Log("Room position X: " + room.transform.position.x);
+            Debug.Log("Room position Z: " + room.transform.position.z);
+
             // Check room overlap here
-            CheckRoomOverlapTwo(room, ref rooms);
+            // CheckRoomOverlapTwo(room, ref rooms);
             /*isOverlap = CheckRoomOverlap(room, ref rooms);
 
             if(isOverlap)
@@ -56,12 +63,20 @@ public class RoomGenerator : MonoBehaviour
                 room.transform.position = new Vector3(x, 0, z);
             }*/
 
-            //rooms.Add(room);
+            rooms.Add(room);
         }
 
-        //ConnectRooms(rooms[0], rooms[1]);
-        //ConnectRooms(rooms[1], rooms[2]);
-        //ConnectRooms(rooms[2], rooms[3]);
+        coroutine = WaitAndConnect(0.1f);
+        StartCoroutine(coroutine);
+    }
+
+    private IEnumerator WaitAndConnect(float waitTime)
+    {
+        yield return new WaitForSeconds(waitTime);
+        ConnectRooms(rooms[0], rooms[1]);
+        ConnectRooms(rooms[1], rooms[2]);
+        ConnectRooms(rooms[2], rooms[3]);
+        //print("WaitAndPrint " + Time.time);
     }
 
     void ConnectRooms(GameObject startingRoom, GameObject destinationRoom)
@@ -169,6 +184,9 @@ public class RoomGenerator : MonoBehaviour
                 BoxCollider roomB = rooms[i].GetComponent<BoxCollider>();
                 Vector3 minBoundsRoomB = roomB.bounds.min;
                 Vector3 maxBoundsRoomB = roomB.bounds.max;
+
+                Debug.Log("Room A X, Z: " + roomA.bounds.min + roomA.bounds.max);
+                Debug.Log("Room B X, Z: " + roomB.bounds.min + roomB.bounds.max);
 
                 if (roomA.bounds.Intersects(roomB.bounds))
                 {
