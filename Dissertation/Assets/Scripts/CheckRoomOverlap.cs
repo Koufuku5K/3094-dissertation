@@ -4,14 +4,7 @@ using UnityEngine;
 
 public class CheckRoomOverlap : MonoBehaviour
 {
-    //private RoomGenerator rg;
     private List<GameObject> existingRooms = new List<GameObject>();
-    //private List<GameObject> existingRooms = RoomGenerator.rooms;
-
-    /*void Start()
-    {
-        rg = GetComponent<RoomGenerator>();
-    }*/
 
     private void OnTriggerEnter(Collider other)
     {
@@ -32,18 +25,9 @@ public class CheckRoomOverlap : MonoBehaviour
                             // Destroy the room
                             Debug.Log("Rooms are overlapping");
                             RoomGenerator roomGenerator = FindObjectOfType<RoomGenerator>();
-                            /*foreach (var x in roomGenerator.rooms)
-                            {
-                                Debug.Log(x.ToString());
-                            }*/
-                            roomGenerator.RemoveRoom(room);
-                            //existingRooms.Remove(room);
+                            roomGenerator.RemoveRoom(room); 
                             Destroy(room);
                             Debug.Log("Room Destroyed");
-                            /*foreach (var x in roomGenerator.rooms)
-                            {
-                                Debug.Log(x.ToString());
-                            }*/
                             Debug.Log("Remaining Rooms: " + roomGenerator.rooms.Count);
                             break;
                         }
