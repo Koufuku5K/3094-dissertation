@@ -7,7 +7,7 @@ public class RoomGenerator : MonoBehaviour
     public GameObject roomPrefab;
     public GameObject corridorPrefab;
     public List<GameObject> rooms = new List<GameObject>();
-    public List<GameObject> unvisitedRooms = new List<GameObject>();
+    public List<GameObject> adjacentRooms = new List<GameObject>();
     public List<GameObject> visitedRooms = new List<GameObject>();
     private IEnumerator coroutine;
 
@@ -61,9 +61,9 @@ public class RoomGenerator : MonoBehaviour
     private IEnumerator WaitAndConnect(float waitTime)
     {
         yield return new WaitForSeconds(waitTime);
-        DFS(rooms[0], visitedRooms, rooms, 1000.0f);
+        DFS(rooms[0], visitedRooms, rooms, 100.0f);
 
-        for (int i = 0; i < visitedRooms.Count; i++)
+        for (int i = 0; i < visitedRooms.Count - 1; i++)
         {
             ConnectRooms(visitedRooms[i], visitedRooms[i+1]);
         }
@@ -90,33 +90,48 @@ public class RoomGenerator : MonoBehaviour
 
     public List<GameObject> FindAdjacentRooms(GameObject currentRoom, List<GameObject> roomsList, float maxDistance)
     {
-        List<GameObject> adjacentRooms = new List<GameObject>();
+        List<GameObject> adjacentRoomsList = new List<GameObject>();
 
         foreach (GameObject room in roomsList)
         {
             if (room != currentRoom)
             {
                 float distance = Vector3.Distance(currentRoom.transform.position, room.transform.position);
+                Debug.Log("Distance between room " + currentRoom + "and room " + room + "is " + distance);
                 if (distance <= maxDistance)
                 {
-                    adjacentRooms.Add(room);
+                    adjacentRoomsList.Add(room);
                 }
             }
         }
 
-        return adjacentRooms;
+        return adjacentRoomsList;
     }
 
-    void DFS(GameObject currentRoom, List<GameObject> visitedRooms, List<GameObject> roomsList, float maxDistance)
+    void DFS(GameObject currentRoom, List<GameObject> visitedRooms, List<GameObject> adjacentRoomsList, float maxDistance)
     {
+        adjacentRooms = FindAdjacentRooms(currentRoom, rooms, maxDistance);
+
         visitedRooms.Add(currentRoom);
 
-        foreach (GameObject adjacentRoom in FindAdjacentRooms(currentRoom, roomsList, maxDistance)) {
-            if (!visitedRooms.Contains(adjacentRoom)) {
-                DFS(adjacentRoom, visitedRooms, roomsList, maxDistance);
+        foreach (GameObject room in adjacentRooms)
+        {
+            if (!visitedRooms.Contains(room))
+            {
+                //visitedRooms.Add(adjacentRoom);
+                //ConnectRooms(currentRoom, adjacentRoom);
+                //currentRoom = adjacentRoom;
+                DFS(room, visitedRooms, adjacentRooms, maxDistance);
             }
         }
     }
+
+    /*void DFS(GameObject currentRoom, List<GameObject> visitedRooms, List<GameObject> adjacentRoomsList, float maxDistance)
+    {
+        visitedRooms.Add(currentRoom);
+        
+        foreach adjacentRoom in adjacentRoomsList
+    }*/
 
     void ConnectRooms(GameObject startingRoom, GameObject destinationRoom)
     {
