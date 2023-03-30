@@ -7,12 +7,9 @@ public class RoomGenerator : MonoBehaviour
     public GameObject roomPrefab;
     public GameObject corridorPrefab;
     public List<GameObject> rooms = new List<GameObject>();
-    public List<GameObject> adjacentRooms = new List<GameObject>();
-    public List<GameObject> visitedRooms = new List<GameObject>();
+    private List<GameObject> adjacentRooms = new List<GameObject>();
+    private List<GameObject> visitedRooms = new List<GameObject>();
     private IEnumerator coroutine;
-
-    //private List<GameObject> visited = new List<GameObject>();
-    //private List<GameObject> unvisited = new List<GameObject>();
 
     // Start is called before the first frame update
     void Start()
@@ -55,7 +52,6 @@ public class RoomGenerator : MonoBehaviour
         }
 
         coroutine = WaitAndDFS(0.1f);
-        //coroutine = WaitAndConnectNearest(0.1f);
         StartCoroutine(coroutine);
     }
 
@@ -68,8 +64,20 @@ public class RoomGenerator : MonoBehaviour
         {
             ConnectRooms(visitedRooms[i], visitedRooms[i + 1]);
         }
+
+        ConvexHull(rooms);
     }
 
+    /*
+     * FindAdjacentRooms Function: Finds adjacent room from current room and adds it to adjacent rooms
+     * list. The closest room to the current room is the adjacent room.
+     * 
+     * Parameters: - GameObject currentRoom: the current room gameobject.
+     *             - List<GameObject> roomsList: list of rooms available.
+     *             - float maxDistance: the maximum distance to be considered. Rooms further away from this maximum distance
+     *                                  will not be connected.
+     * Returns: List<GameObject>
+     */
     public List<GameObject> FindAdjacentRooms(GameObject currentRoom, List<GameObject> roomsList, float maxDistance)
     {
         List<GameObject> adjacentRoomsList = new List<GameObject>();
@@ -102,20 +110,10 @@ public class RoomGenerator : MonoBehaviour
         {
             if (!visitedRooms.Contains(room))
             {
-                //visitedRooms.Add(adjacentRoom);
-                //ConnectRooms(currentRoom, adjacentRoom);
-                //currentRoom = adjacentRoom;
                 DFS(room, visitedRooms, adjacentRooms, maxDistance);
             }
         }
     }
-
-    /*void DFS(GameObject currentRoom, List<GameObject> visitedRooms, List<GameObject> adjacentRoomsList, float maxDistance)
-    {
-        visitedRooms.Add(currentRoom);
-        
-        foreach adjacentRoom in adjacentRoomsList
-    }*/
 
     void ConnectRooms(GameObject startingRoom, GameObject destinationRoom)
     {
@@ -200,6 +198,14 @@ public class RoomGenerator : MonoBehaviour
             corridorConnect.transform.localScale = new Vector3(10f, 0.1f, 10f);
             corridorConnect.transform.position = connectPoint2;
         }
+    }
+
+    void ConvexHull(List<GameObject> roomsList)
+    {
+        roomsList.Sort((roomA, roomB) => roomA.transform.position.z.CompareTo(roomB.transform.position.z));
+        
+
+        GameObject lowestNode = roomsList[0];
     }
 
     /*
