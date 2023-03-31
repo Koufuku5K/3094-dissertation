@@ -202,10 +202,21 @@ public class RoomGenerator : MonoBehaviour
 
     void ConvexHull(List<GameObject> roomsList)
     {
-        roomsList.Sort((roomA, roomB) => roomA.transform.position.z.CompareTo(roomB.transform.position.z));
+        List<GameObject> sortedRooms = roomsList;
+        sortedRooms.Sort((roomA, roomB) => roomA.transform.position.z.CompareTo(roomB.transform.position.z));
         
 
-        GameObject lowestNode = roomsList[0];
+        GameObject lowestNode = sortedRooms[0];
+
+        lowestNode.GetComponent<Renderer>().material.color = Color.red;
+        sortedRooms[1].GetComponent<Renderer>().material.color = Color.red;
+
+        Vector3 dir = sortedRooms[1].transform.position - lowestNode.transform.position;
+
+        // Calculate the angle between Room B and Room A from Room A's horizontal
+        float angle = Mathf.Atan2(dir.z, dir.x) * Mathf.Rad2Deg;
+
+        Debug.Log("Angle between First and Second Room is: " + angle);
     }
 
     /*
