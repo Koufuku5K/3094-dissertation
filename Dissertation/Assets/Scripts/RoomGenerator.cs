@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class RoomGenerator : MonoBehaviour
 {
@@ -65,7 +66,7 @@ public class RoomGenerator : MonoBehaviour
             ConnectRooms(visitedRooms[i], visitedRooms[i + 1]);
         }
 
-        ConvexHull(rooms);
+        //ConvexHull(rooms);
     }
 
     /*
@@ -204,19 +205,41 @@ public class RoomGenerator : MonoBehaviour
     {
         List<GameObject> sortedRooms = roomsList;
         sortedRooms.Sort((roomA, roomB) => roomA.transform.position.z.CompareTo(roomB.transform.position.z));
-        
 
         GameObject lowestNode = sortedRooms[0];
 
-        lowestNode.GetComponent<Renderer>().material.color = Color.red;
-        sortedRooms[1].GetComponent<Renderer>().material.color = Color.red;
+        sortedRooms.Sort((roomA, roomB) => Mathf.Atan2(roomB.transform.position.z - lowestNode.transform.position.z, roomB.transform.position.x - lowestNode.transform.position.x).CompareTo(Mathf.Atan2(roomA.transform.position.z - lowestNode.transform.position.z, roomA.transform.position.x - lowestNode.transform.position.x)));
 
-        Vector3 dir = sortedRooms[1].transform.position - lowestNode.transform.position;
+        Stack<GameObject> stack = new Stack<GameObject>();
+        stack.Push(lowestNode);
+        stack.Push(sortedRooms[1]);
 
-        // Calculate the angle between Room B and Room A from Room A's horizontal
-        float angle = Mathf.Atan2(dir.z, dir.x) * Mathf.Rad2Deg;
+        for (int i = 2; i < sortedRooms.Count; i++)
+        {
+            GameObject currentRoom = sortedRooms[i];
 
-        Debug.Log("Angle between First and Second Room is: " + angle);
+            while (stack.Count > 1 && Orientation(stack.First(), stack.Peek(), currentRoom) < 0f)
+            {
+                stack.Pop();
+                //currentRoom = sortedRooms[i+1];
+            }
+
+            stack.Push(currentRoom);
+        }
+
+        List<GameObject> convexHullRooms = new List<GameObject>(stack);
+
+        for (int i = 0; i < convexHullRooms.Count - 1; i++)
+        {
+            ConnectRooms(convexHullRooms[i], convexHullRooms[i + 1]);
+        }
+    }
+
+    public float Orientation (GameObject roomA, GameObject roomB, GameObject roomC)
+    {
+        Vector3 v1 = roomB.transform.position - roomA.transform.position;
+        Vector3 v2 = roomC.transform.position - roomB.transform.position;
+        return v1.x * v2.z - v1.z * v2.x;
     }
 
     /*
