@@ -66,7 +66,9 @@ public class RoomGenerator : MonoBehaviour
             ConnectRooms(visitedRooms[i], visitedRooms[i + 1]);
         }
 
-        //ConvexHull(rooms);
+        ConvexHull(rooms);
+        //pickRandomRoom(rooms);
+        ConvexHull(pickRandomRoom(rooms));
     }
 
     /*
@@ -208,38 +210,76 @@ public class RoomGenerator : MonoBehaviour
 
         GameObject lowestNode = sortedRooms[0];
 
-        sortedRooms.Sort((roomA, roomB) => Mathf.Atan2(roomB.transform.position.z - lowestNode.transform.position.z, roomB.transform.position.x - lowestNode.transform.position.x).CompareTo(Mathf.Atan2(roomA.transform.position.z - lowestNode.transform.position.z, roomA.transform.position.x - lowestNode.transform.position.x)));
+        sortedRooms.Sort((a, b) => GetAngle(lowestNode.transform.position, a.transform.position).CompareTo(GetAngle(lowestNode.transform.position, b.transform.position)));
 
-        Stack<GameObject> stack = new Stack<GameObject>();
-        stack.Push(lowestNode);
-        stack.Push(sortedRooms[1]);
+        List<GameObject> hullList = new List<GameObject>();
+        hullList.Add(lowestNode);
+        hullList.Add(sortedRooms[1]);
 
         for (int i = 2; i < sortedRooms.Count; i++)
         {
             GameObject currentRoom = sortedRooms[i];
-
-            while (stack.Count > 1 && Orientation(stack.First(), stack.Peek(), currentRoom) < 0f)
+            
+            if (Determinant(hullList[hullList.Count - 2], hullList[hullList.Count - 1], currentRoom) < 0f)
             {
-                stack.Pop();
-                //currentRoom = sortedRooms[i+1];
+                hullList.RemoveAt(hullList.Count - 1);
+                hullList.Add(currentRoom);
+            }
+            else if (Determinant(hullList[hullList.Count - 2], hullList[hullList.Count - 1], currentRoom) > 0f)
+            {
+                hullList.Add(currentRoom);
             }
 
-            stack.Push(currentRoom);
         }
 
-        List<GameObject> convexHullRooms = new List<GameObject>(stack);
-
-        for (int i = 0; i < convexHullRooms.Count - 1; i++)
+        for (int i = 0; i < hullList.Count - 1; i++)
         {
-            ConnectRooms(convexHullRooms[i], convexHullRooms[i + 1]);
+            ConnectRooms(hullList[i], hullList[i + 1]);
         }
+
+        // Connect the last room in the list with the first to close the loop
+        ConnectRooms(hullList[0], hullList.Last());
     }
 
-    public float Orientation (GameObject roomA, GameObject roomB, GameObject roomC)
+    private float GetAngle(Vector3 a, Vector3 b)
+    {
+        Vector3 direction = b - a;
+        return Mathf.Atan2(direction.z, direction.x) * Mathf.Rad2Deg;
+    }
+
+    public float Determinant(GameObject roomA, GameObject roomB, GameObject roomC)
     {
         Vector3 v1 = roomB.transform.position - roomA.transform.position;
         Vector3 v2 = roomC.transform.position - roomB.transform.position;
         return v1.x * v2.z - v1.z * v2.x;
+    }
+
+    public void secondHull(List<GameObject> initialList)
+    {
+        int numToPick = 5;
+        List<GameObject> secondHullList = new List<GameObject>();
+
+        for (int i = 0; i < numToPick; i++)
+        {
+            int randomIndex = Random.Range(0, initialList.Count);
+            secondHullList.Add(initialList[randomIndex]);
+        }
+
+        ConvexHull(secondHullList);
+    }
+
+    public List<GameObject> pickRandomRoom(List<GameObject> initialList)
+    {
+        int numToPick = 5;
+        List<GameObject> secondHullList = new List<GameObject>();
+
+        for (int i = 0; i < numToPick; i++)
+        {
+            int randomIndex = Random.Range(0, initialList.Count);
+            secondHullList.Add(initialList[randomIndex]);
+        }
+
+        return secondHullList;
     }
 
     /*
