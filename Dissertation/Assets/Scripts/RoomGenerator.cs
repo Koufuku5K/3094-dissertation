@@ -66,9 +66,9 @@ public class RoomGenerator : MonoBehaviour
             ConnectRooms(visitedRooms[i], visitedRooms[i + 1]);
         }
 
-        ConvexHull(rooms);
+        //ConvexHull(rooms);
         //pickRandomRoom(rooms);
-        ConvexHull(pickRandomRoom(rooms));
+        //ConvexHull(pickRandomRoom(rooms));
     }
 
     /*
@@ -210,7 +210,8 @@ public class RoomGenerator : MonoBehaviour
 
         GameObject lowestNode = sortedRooms[0];
 
-        sortedRooms.Sort((a, b) => GetAngle(lowestNode.transform.position, a.transform.position).CompareTo(GetAngle(lowestNode.transform.position, b.transform.position)));
+        sortedRooms.Sort((a, b) => GetAngle(lowestNode.transform.position, a.transform.position).CompareTo(
+            GetAngle(lowestNode.transform.position, b.transform.position)));
 
         List<GameObject> hullList = new List<GameObject>();
         hullList.Add(lowestNode);
