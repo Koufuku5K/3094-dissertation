@@ -66,9 +66,9 @@ public class RoomGenerator : MonoBehaviour
             ConnectRooms(visitedRooms[i], visitedRooms[i + 1]);
         }
 
-        //ConvexHull(rooms);
-        //pickRandomRoom(rooms);
-        //ConvexHull(pickRandomRoom(rooms));
+        ConvexHull(rooms);
+        pickRandomRoom(rooms);
+        ConvexHull(pickRandomRoom(rooms));
     }
 
     /*
